@@ -20,6 +20,29 @@ builds:
     goarch:
       - amd64
       - arm64
+  - id: rpk-windows-and-linux-2
+    dir: ./rpk/
+    main: ./cmd/rpk
+    binary: rpk-2
+    ldflags:
+      - -X github.com/redpanda-data/redpanda/src/go/rpk/pkg/cli/version.version={{.Tag}}
+      - -X github.com/redpanda-data/redpanda/src/go/rpk/pkg/cli/version.rev={{.ShortCommit}}
+      - -X github.com/redpanda-data/redpanda/src/go/rpk/pkg/cli/version.buildTime={{.Date}}
+      - -X github.com/redpanda-data/redpanda/src/go/rpk/pkg/cli/version.hostOs={{.Os}}
+      - -X github.com/redpanda-data/redpanda/src/go/rpk/pkg/cli/version.hostArch={{.Arch}}
+      - -X github.com/redpanda-data/redpanda/src/go/rpk/pkg/cli/container/common.tag={{.Tag}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    hooks:
+      post:
+        - cmd: ./download_rp_connect.sh {{ .Os }} {{ .Arch }} {{ dir .Path }}
+
   - id: rpk-linux-microsoft-go
     dir: ./rpk/
     main: ./cmd/rpk
@@ -56,6 +79,9 @@ builds:
     goarch:
       - amd64
       - arm64
+    hooks:
+      post:
+        - cmd: ./download_rp_connect.sh {{ .Os }} {{ .Arch }} {{ dir .Path }}
   - id: rpk-windows
     dir: ./rpk/
     main: ./cmd/rpk
@@ -94,6 +120,7 @@ builds:
       - arm64
     hooks:
       post:
+        - cmd: ./download_rp_connect.sh {{ .Os }} {{ .Arch }} {{ dir .Path }}
         # The binary is signed and notarized when running a production release, but for snapshot builds notarization is
         # skipped and only ad-hoc signing is performed (not cryptographic material is needed).
         #
@@ -105,8 +132,10 @@ builds:
 archives:
   - id: rpk-zip
     builds:
-      - rpk-windows-and-linux
+      - rpk-windows-and-linux-2
       - rpk-darwin
+    files:
+      - "{{ .Dist }}/benthos"
     format: zip
     name_template: "rpk-{{ .Os }}-{{ .Arch }}"
 release:
