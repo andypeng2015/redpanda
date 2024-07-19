@@ -5,11 +5,13 @@ on:
     branches:
       - 'dev'
     paths:
+      - '.github/workflows/lint-golang.yml'
       - 'src/go/**'
     tags-ignore:
       - '**'
   pull_request:
     paths:
+      - '.github/workflows/lint-golang.yml'
       - 'src/go/**'
 
 jobs:
@@ -53,7 +55,8 @@ jobs:
         git diff --exit-code -- go.mod go.sum
 
     - name: Check goreleaser configuration file
-      uses: goreleaser/goreleaser-action@v5
+      uses: goreleaser/goreleaser-action@v6
       with:
-        version: v1.24.0
-        args: check src/go/.goreleaser.yaml
+        distribution: goreleaser-pro
+        version: '~> v2'
+        args: check src/go/.goreleaser.yaml src/go/.goreleaser_rp_connect.yaml
