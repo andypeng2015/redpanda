@@ -1,4 +1,5 @@
 project_name: rpk
+version: 2
 builds:
   # rpk-windows-and-linux is deprecated; will be replaced by rpk-windows, rpk-linux, rpk-linux-microsoft-go
   - id: rpk-windows-and-linux
@@ -140,7 +141,7 @@ brews:
     repository:
       owner: redpanda-data
       name: homebrew-tap
-    folder: Formula
+    directory: Formula
     skip_upload: auto
     ids:
       - rpk-zip
